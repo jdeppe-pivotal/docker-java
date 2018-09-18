@@ -1,9 +1,9 @@
 package com.github.dockerjava.api.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import java.io.Serializable;
 
 /**
  * Represents a host path being bind mounted as a {@link Volume} in a Docker container.
@@ -125,6 +125,31 @@ public class Bind implements Serializable {
                 }
 
                 return new Bind(parts[0], new Volume(parts[1]), accessMode, seMode, nocopy, propagationMode);
+            }
+            case 5: {
+                String[] flags = parts[4].split(",");
+                AccessMode accessMode = AccessMode.DEFAULT;
+                SELContext seMode = SELContext.DEFAULT;
+                Boolean nocopy = null;
+                PropagationMode propagationMode = PropagationMode.DEFAULT_MODE;
+                for (String p : flags) {
+                    if (p.length() == 2) {
+                        accessMode = AccessMode.valueOf(p.toLowerCase());
+                    } else if ("nocopy".equals(p)) {
+                        nocopy = true;
+                    } else if (PropagationMode.SHARED.toString().equals(p)) {
+                        propagationMode = PropagationMode.SHARED;
+                    } else if (PropagationMode.SLAVE.toString().equals(p)) {
+                        propagationMode = PropagationMode.SLAVE;
+                    } else if (PropagationMode.PRIVATE.toString().equals(p)) {
+                        propagationMode = PropagationMode.PRIVATE;
+                    } else {
+                        seMode = SELContext.fromString(p);
+                    }
+                }
+
+                return new Bind(parts[0] + ":" + parts[1], new Volume(parts[2] + ":" + parts[3]),
+                    accessMode, seMode, nocopy, propagationMode);
             }
             default: {
                 throw new IllegalArgumentException();
