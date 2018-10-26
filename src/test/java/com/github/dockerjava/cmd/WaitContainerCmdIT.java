@@ -33,11 +33,11 @@ public class WaitContainerCmdIT extends CmdIT {
 
         dockerRule.getClient().startContainerCmd(container.getId()).exec();
 
-        int exitCode = dockerRule.getClient().waitContainerCmd(container.getId()).exec(new WaitContainerResultCallback())
+        long exitCode = dockerRule.getClient().waitContainerCmd(container.getId()).exec(new WaitContainerResultCallback())
                 .awaitStatusCode();
         LOG.info("Container exit code: {}", exitCode);
 
-        assertThat(exitCode, equalTo(0));
+        assertThat(exitCode, equalTo(0L));
 
         InspectContainerResponse inspectContainerResponse = dockerRule.getClient().inspectContainerCmd(container.getId()).exec();
         LOG.info("Container Inspect: {}", inspectContainerResponse.toString());

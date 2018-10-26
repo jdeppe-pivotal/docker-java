@@ -13,9 +13,13 @@ public class WaitResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("StatusCode")
-    private Integer statusCode;
+    private Long statusCode;
 
     public Integer getStatusCode() {
-        return statusCode;
+        try {
+            return Math.toIntExact(statusCode);
+        } catch (ArithmeticException aex) {
+            return Integer.MAX_VALUE;
+        }
     }
 }
